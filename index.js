@@ -1,9 +1,11 @@
 /* eslint-disable prettier/prettier */
 const express = require('express');
+const dotenv = require('dotenv');
 const cors = require('cors');
 const loginRoute = require('./controllers/loginService');
 
 const app = express();
+dotenv.config();
 
 app.use(express.json());
 app.use(cors());

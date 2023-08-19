@@ -130,3 +130,4 @@ dist
 .pnp.*
 .eslintrc.json
 dbConnect.js
+.env
