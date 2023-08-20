@@ -6,7 +6,7 @@ const pool = require('../dbConnect');
 
 const router = express.Router();
 
-router.post('/login', (req, res) => {
+router.post('/login', (req, res, next) => {
      pool.query('SELECT * FROM signup WHERE username = $1', [req.body.username], async (error, result) => {
         try {
             if (error) throw error;
@@ -14,9 +14,7 @@ router.post('/login', (req, res) => {
             if (result.rowCount > 0) {
                 // eslint-disable-next-line max-len
                 const isValidPassword = await bcrypt.compare(req.body.password, result.rows[0].password);
-                console.log(isValidPassword);
                 if (isValidPassword) {
-                    console.log(process.env.SECRET_KEY);
                     const token = jwt.sign({
                         username: result.rows[0].username,
                         role: result.rows[0].role,
@@ -24,19 +22,18 @@ router.post('/login', (req, res) => {
                         expiresIn: '1h',
                     });
 
-                    console.log('success');
                     res.status(200).json({
                         access_token: token,
                         message: 'Login successful',
                     });
                 } else {
-                    console.log('failure');
-                    res.status(401).send('Authentication failed');
+                    res.status(401).send('Authentication failed!');
+                    next();
                 }
             }
         } catch (err) {
-            console.log(err.message);
-            res.status(401).send('Authentication failed');
+            res.status(401).send('Authentication failed!');
+            next();
         }
     });
 });
